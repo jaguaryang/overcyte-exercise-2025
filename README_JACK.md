@@ -23,3 +23,15 @@ while not much of an issue with local sqlite, implement correct indexes
 4. Refactor the registerUser function using Effect.
 this doesn't need to be perfect, nor use the full Effect toolbox. just a basic understanding of what Effect provides
     This is the most easy one, Effect is a function programming lib like fp-ts, I just use AI to generate an initial function, and then fine-tune it.
+
+5. Implement App Router/React features in places that need it, such as suspense and transitions
+   I simply added a Suspense tag to page.tsx because I found that the current loading logic was already in place, such as the Sign up button loading.
+
+6. Identify and fix a sensitive data leak issue
+    I didn’t use a penetration testing tool to probe each API; I just eyeballed it and noticed one spot:
+    // Identify and fix a sensitive data leak issue by Jack 12/11/2025
+    // const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret-key');
+    if (!process.env.JWT_SECRET) {
+    throw new Error('Missing required env var JWT_SECRET');
+    }
+    const JWT_SECRET = Buffer.from(process.env.JWT_SECRET, 'base64');

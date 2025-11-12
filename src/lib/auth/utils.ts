@@ -2,7 +2,12 @@ import bcrypt from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret-key');
+// Identify and fix a sensitive data leak issue by Jack 12/11/2025
+// const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret-key');
+if (!process.env.JWT_SECRET) {
+  throw new Error('Missing required env var JWT_SECRET');
+}
+const JWT_SECRET = Buffer.from(process.env.JWT_SECRET, 'base64');
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);
