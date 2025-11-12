@@ -78,7 +78,7 @@
       }
     }
   },
-  "mounts": [],
+  "mounts": ["type=bind,source=/home/${localEnv:USER}/.ssh,target=/root/.ssh"],
   // "remoteUser": "appuser",
   "runArgs": ["--pull=never", "--network=host"]
 }
