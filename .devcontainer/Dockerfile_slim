@@ -1,0 +1,8 @@
+FROM node:22-slim AS base
+
+RUN apt-get update && apt-get install -y \
+    unzip git curl nano xclip iproute2 lsof dnsutils \
+    inkscape lsb-release software-properties-common \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g pnpm

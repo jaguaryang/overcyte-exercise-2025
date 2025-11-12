@@ -1,0 +1,84 @@
+{
+  "name": "Hello OverCyte",
+  "containerEnv": {
+    "JACK": "YANG"
+  },
+  // docker build -t dev-xxx:latest . --progress plain
+  "build": {
+    "context": "..",
+    "dockerfile": "./Dockerfile_slim",
+    "args": {
+      "progress": "plain"
+    }
+  },
+  "features": {
+    "ghcr.io/nils-geistmann/devcontainers-features/zsh:0": {
+      "version": "0.0.6",
+      "plugins": "git zsh-autosuggestions zsh-syntax-highlighting"
+    }
+  },
+  "forwardPorts": [],
+  "postCreateCommand": "find .devcontainer -maxdepth 1 -name '*.sh' -exec bash {} \\;",
+  "postStartCommand": "",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "PKief.material-icon-theme",
+        "p26frqxxfmwrzekd6c6fcty5kipjkr3gaeejzpkyy42p5udjkjyq.copyplaintext",
+        "Tyriar.sort-lines",
+        "Chouzz.vscode-better-align",
+        "emeraldwalk.RunOnSave",
+        "ritwickdey.LiveServer",
+        "eamodio.gitlens",
+        "ms-azuretools.vscode-docker",
+        "ckolkman.vscode-postgres",
+
+        "esbenp.prettier-vscode",
+        "SonarSource.sonarlint-vscode",
+        "redhat.vscode-xml",
+        "DigitalBrainstem.javascript-ejs-support",
+        "bradlc.vscode-tailwindcss",
+        "Prisma.prisma",
+        "dsznajder.es7-react-js-snippets",
+        "svelte.svelte-vscode",
+
+        "openai.chatgpt",
+        "amazonwebservices.amazon-q-vscode"
+      ],
+      "settings": {
+        "explorer.fileNesting.enabled": true,
+        "explorer.fileNesting.patterns": {
+          ".gitignore": ".gitattributes, .dockerignore",
+          "package.json": "pnpm*, Caddyfile, piece.code-workspace, react-router.config.ts, tsconfig.json, vite.config.ts, tsup.config.ts, .env",
+          "Dockerfile": "docker-entrypoint.sh, deploy.sh"
+        },
+        "files.associations": {
+          "*.css": "tailwindcss",
+          "*.scss": "tailwindcss"
+        },
+        "editor.quickSuggestions": {
+          "strings": "on"
+        },
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "[xml]": {
+          "editor.defaultFormatter": "redhat.vscode-xml"
+        },
+        "[prisma]": {
+          "editor.defaultFormatter": "Prisma.prisma"
+        },
+        "css.lint.unknownAtRules": "ignore",
+        "diffEditor.ignoreTrimWhitespace": false,
+        "prettier.printWidth": 120,
+        "prettier.singleQuote": true,
+        "prettier.trailingComma": "es5",
+        "prettier.arrowParens": "avoid",
+        "prettier.proseWrap": "preserve",
+        "amazonQ.telemetry": false,
+        "redhat.telemetry.enabled": false
+      }
+    }
+  },
+  "mounts": [],
+  // "remoteUser": "appuser",
+  "runArgs": ["--pull=never", "--network=host"]
+}

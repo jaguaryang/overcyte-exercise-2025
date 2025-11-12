@@ -46,3 +46,6 @@ db.sqlite
 # documentation
 plan.md
 issues.md
+
+# added by Jack yang
+.pnpm-store

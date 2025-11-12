@@ -8,6 +8,9 @@ CREATE TABLE `posts` (
 	FOREIGN KEY (`author_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
+-- Added by Jack 12/11/2025
+-- CREATE INDEX `posts_author_id_idx` ON `posts` (`author_id`);
+--> statement-breakpoint
 CREATE TABLE `users` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`username` text NOT NULL,
