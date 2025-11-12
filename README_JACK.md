@@ -10,7 +10,12 @@ while not much of an issue with local sqlite, implement correct indexes
             CREATE INDEX `posts_author_id_idx` ON `posts` (`author_id`);
     Step 3: Finnaly, I relized this is orm, it should be in schema, so it is:
             table => [index('posts_author_id_idx').on(table.authorId)]
-            pnpm npx npx drizzle-kit push
+            pnpm npx drizzle-kit push
     Summary: I haven't used Drizzle before, but it is quite similar to Prisma.
 
 3. Identify and fix poor React performance
+    Not perfect, just use react-virtual to achive a list component. Some idea:
+    - Multiple React libraries can implement virtual lists, e.g., react-window, react-virtualized, @tanstack/react-virtual.
+    - Parameter searchTerm is necessary for highlighting and doesn’t add extra render cost; no need for extra leaf components.
+    - For large data, server-side pagination is best for true infinite scrolling.
+    - Under ~10k items, client-side pagination suffices; DOM nodes, not data size, drive performance and make grid layouts easier.

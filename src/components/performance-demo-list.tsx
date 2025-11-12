@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { PerformanceDemoItem } from "./performance-demo-item";
+import { useRef, useState } from 'react';
+import { PerformanceDemoItem } from './performance-demo-item';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 // Generate a large dataset
 const generateItems = (count: number) => {
@@ -17,32 +18,35 @@ const generateItems = (count: number) => {
   }));
 };
 
-const ITEMS = generateItems(5000); // 5000 items to cause performance issues
+const ITEMS = generateItems(50); // 5000 items to cause performance issues
 
 export function PerformanceDemoList() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [sortBy, setSortBy] = useState("name");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('name');
   const [showInStockOnly, setShowInStockOnly] = useState(false);
 
+  const parentRef = useRef<HTMLDivElement>(null);
+
   // This filter runs on every render - performance issue #1
-  const filteredItems = ITEMS.filter((item) => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
+  const filteredItems = ITEMS.filter(item => {
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
     const matchesStock = !showInStockOnly || item.inStock;
-    
+
     return matchesSearch && matchesCategory && matchesStock;
   });
 
   // This sort runs on every render - performance issue #2
   const sortedItems = [...filteredItems].sort((a, b) => {
     switch (sortBy) {
-      case "name":
+      case 'name':
         return a.name.localeCompare(b.name);
-      case "price":
+      case 'price':
         return a.price - b.price;
-      case "rating":
+      case 'rating':
         return b.rating - a.rating;
       default:
         return 0;
@@ -50,7 +54,13 @@ export function PerformanceDemoList() {
   });
 
   // Generate categories for filter
-  const categories = ["all", ...Array.from(new Set(ITEMS.map(item => item.category)))];
+  const categories = ['all', ...Array.from(new Set(ITEMS.map(item => item.category)))];
+
+  const rowVirtualizer = useVirtualizer({
+    count: filteredItems.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 35,
+  });
 
   return (
     <div className="space-y-6">
@@ -58,42 +68,36 @@ export function PerformanceDemoList() {
       <div className="bg-white p-4 rounded-lg shadow space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Search
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
             <input
               type="text"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               placeholder="Search items..."
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={e => setSelectedCategory(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {categories.map((category) => (
+              {categories.map(category => (
                 <option key={category} value={category}>
                   {category}
                 </option>
               ))}
             </select>
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Sort by
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Sort by</label>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={e => setSortBy(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="name">Name</option>
@@ -101,27 +105,27 @@ export function PerformanceDemoList() {
               <option value="rating">Rating</option>
             </select>
           </div>
-          
+
           <div className="flex items-end">
             <label className="flex items-center">
               <input
                 type="checkbox"
                 checked={showInStockOnly}
-                onChange={(e) => setShowInStockOnly(e.target.checked)}
+                onChange={e => setShowInStockOnly(e.target.checked)}
                 className="mr-2"
               />
               <span className="text-sm text-gray-700">In stock only</span>
             </label>
           </div>
         </div>
-        
+
         <div className="text-sm text-gray-600">
           Showing {sortedItems.length} of {ITEMS.length} items
         </div>
       </div>
 
       {/* The expensive list - renders all items without virtualization */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {sortedItems.map((item) => (
           <PerformanceDemoItem
             key={item.id}
@@ -129,6 +133,23 @@ export function PerformanceDemoList() {
             searchTerm={searchTerm} // Passing searchTerm causes unnecessary re-renders
           />
         ))}
+      </div> */}
+
+      <div ref={parentRef} className="h-200 relative overflow-auto">
+        {rowVirtualizer.getVirtualItems().map(virtualRow => {
+          const item = filteredItems[virtualRow.index];
+          return (
+            <div
+              key={virtualRow.key}
+              data-index={virtualRow.index}
+              ref={rowVirtualizer.measureElement}
+              className="absolute top-0 left-0 w-full pb-4"
+              style={{ transform: `translateY(${virtualRow.start}px)` }}
+            >
+              <PerformanceDemoItem item={item} searchTerm={searchTerm} />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
