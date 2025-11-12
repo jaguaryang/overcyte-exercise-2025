@@ -19,3 +19,7 @@ while not much of an issue with local sqlite, implement correct indexes
     - Parameter searchTerm is necessary for highlighting and doesn’t add extra render cost; no need for extra leaf components.
     - For large data, server-side pagination is best for true infinite scrolling.
     - Under ~10k items, client-side pagination suffices; DOM nodes, not data size, drive performance and make grid layouts easier.
+
+4. Refactor the registerUser function using Effect.
+this doesn't need to be perfect, nor use the full Effect toolbox. just a basic understanding of what Effect provides
+    This is the most easy one, Effect is a function programming lib like fp-ts, I just use AI to generate an initial function, and then fine-tune it.
